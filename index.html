@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>moretti incorporated</title>
+<link rel="icon" href="assets/img/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon-16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png">
+<link rel="icon" type="image/png" sizes="48x48" href="assets/img/favicon-48.png">
+<link rel="icon" type="image/png" sizes="512x512" href="assets/img/favicon-512.png">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <video id="bg-video" autoplay muted loop playsinline preload="auto" poster="assets/img/poster.jpg">
+    <source src="https://media.morettiincorporated.com/video/title.mp4" type="video/mp4">
+  </video>
+  <div id="bg-scrim"></div>
+  <video id="static-video" muted playsinline preload="auto" src="https://media.morettiincorporated.com/video/static-effect.mp4"></video>
+  <audio id="channel-audio" preload="auto"></audio>
+
+  <div id="channel-controls">
+    <button id="channel-button" class="channel-button" type="button">
+      <span class="channel-hint">tap to switch channels</span>
+      <span class="channel-button-badge">
+        <svg class="icon channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <polyline points="7,10 12,5 17,10"/>
+          <polyline points="7,14 12,19 17,14"/>
+        </svg>
+      </span>
+    </button>
+  </div>
+
+  <header class="site-header">
+    <a href="#" id="logo" class="logo">morett<span class="logo-eye" data-eye="l"><span class="eye-glyph">i</span><span class="eye-fx" aria-hidden="true"><span class="eye-dot"><span class="eye-dot-open">.</span><span class="eye-dot-closed">-</span></span><svg class="eye-stem" viewBox="0 0 8 20" aria-hidden="true"><path class="stem-path" d="M4,0 C4,7 4,13 4,20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" vector-effect="non-scaling-stroke"><animate attributeName="d" dur="0.3s" repeatCount="indefinite" values="M4,0 C4,7 4,13 4,20;M4,0 C7,7 1,13 4,20;M4,0 C4,7 4,13 4,20;M4,0 C1,7 7,13 4,20;M4,0 C4,7 4,13 4,20" /></path></svg></span></span><span class="logo-mouth-gap">&nbsp;<span class="logo-mouth" aria-hidden="true">_</span></span><span class="logo-eye" data-eye="r"><span class="eye-glyph">i</span><span class="eye-fx" aria-hidden="true"><span class="eye-dot"><span class="eye-dot-open">.</span><span class="eye-dot-closed">-</span></span><svg class="eye-stem" viewBox="0 0 8 20" aria-hidden="true"><path class="stem-path" d="M4,0 C4,7 4,13 4,20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" vector-effect="non-scaling-stroke"><animate attributeName="d" dur="0.3s" repeatCount="indefinite" values="M4,0 C4,7 4,13 4,20;M4,0 C7,7 1,13 4,20;M4,0 C4,7 4,13 4,20;M4,0 C1,7 7,13 4,20;M4,0 C4,7 4,13 4,20" /></path></svg></span></span>ncorporated</a>
+
+    <nav class="site-nav">
+      <a href="#music" class="nav-item scribble-target" data-target="music">
+        <span class="nav-label">Music</span>
+        <svg class="scribble-svg" viewBox="0 0 100 30" preserveAspectRatio="none"><path class="scribble-path" d="M4,15 C10,4 18,26 26,10 C34,-2 42,24 50,12 C58,2 66,22 74,11 C82,3 90,20 96,15" /></svg>
+      </a>
+      <a href="#film" class="nav-item scribble-target" data-target="film">
+        <span class="nav-label">Film</span>
+        <svg class="scribble-svg" viewBox="0 0 100 30" preserveAspectRatio="none"><path class="scribble-path" d="M4,15 C10,4 18,26 26,10 C34,-2 42,24 50,12 C58,2 66,22 74,11 C82,3 90,20 96,15" /></svg>
+      </a>
+      <a href="#about" class="nav-item scribble-target" data-target="about">
+        <span class="nav-label">About</span>
+        <svg class="scribble-svg" viewBox="0 0 100 30" preserveAspectRatio="none"><path class="scribble-path" d="M4,15 C10,4 18,26 26,10 C34,-2 42,24 50,12 C58,2 66,22 74,11 C82,3 90,20 96,15" /></svg>
+      </a>
+      <a href="https://morettincorporated.gumroad.com/" target="_blank" rel="noopener" class="nav-item scribble-target">
+        <span class="nav-label">Store</span>
+        <svg class="scribble-svg" viewBox="0 0 100 30" preserveAspectRatio="none"><path class="scribble-path" d="M4,15 C10,4 18,26 26,10 C34,-2 42,24 50,12 C58,2 66,22 74,11 C82,3 90,20 96,15" /></svg>
+      </a>
+
+      <a href="https://www.instagram.com/moretti_inc/" target="_blank" rel="noopener" class="nav-item icon-item scribble-target" aria-label="Instagram">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor" stroke="none"/></svg>
+        <svg class="scribble-svg icon-scribble" viewBox="0 0 30 30" preserveAspectRatio="none"><path class="scribble-path" d="M4,15 C8,4 14,26 15,15 C16,4 22,26 26,15" /></svg>
+      </a>
+      <a href="mailto:lucamorettimix@gmail.com" class="nav-item icon-item scribble-target" aria-label="Email">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5,6 L12,13 L20.5,6"/></svg>
+        <svg class="scribble-svg icon-scribble" viewBox="0 0 30 30" preserveAspectRatio="none"><path class="scribble-path" d="M4,15 C8,4 14,26 15,15 C16,4 22,26 26,15" /></svg>
+      </a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section id="page-home" class="page active"></section>
+
+    <section id="page-music" class="page">
+      <div class="panel">
+        <h1 class="panel-title">Music</h1>
+        <img class="music-photo" src="assets/img/15_Pyramides_Le+Caire_2021.jpg" alt="">
+        <div class="release">
+          <iframe id="bandcamp-frame" class="bandcamp-embed" title="piano demo tapes I by MORETTI" src="https://bandcamp.com/EmbeddedPlayer/album=3728561470/size=large/bgcol=000000/linkcol=ffffff/artwork=small/tracklist=true/transparent=true/" seamless loading="lazy"><a href="https://morettii.bandcamp.com/album/piano-demo-tapes-i">piano demo tapes I by MORETTI</a></iframe>
+          <div class="release-meta">
+            <span class="release-title">Piano Demo Tapes I</span>
+            <a class="release-link" href="https://morettii.bandcamp.com/album/piano-demo-tapes-i" target="_blank" rel="noopener">Listen on Bandcamp →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="page-film" class="page page-film">
+      <div class="film-scroll">
+
+        <div class="film-sticky-title">
+          <a class="film-sticky-word active" data-word="gatorville" href="https://gatorvillefilm.com/" target="_blank" rel="noopener">Gatorville</a>
+          <span class="film-sticky-word" data-word="earthquakes">like little earthquakes</span>
+          <span class="film-sticky-sub">original score</span>
+        </div>
+
+        <div class="film-collage" data-collage="gatorville">
+          <div class="collage-spacer"></div>
+          <div class="collage-images">
+            <figure class="collage-figure collage-figure-a reveal" data-reveal>
+              <img class="collage-img" src="assets/img/Gatorville/gatorville-still-1.jpg" alt="Gatorville still">
+              <figcaption class="film-desc">As childhood memories are made and fade in the same instant, siblings Lily and Bodhi diverge at the dawn of a life beyond their home, a Colorado alligator sanctuary.</figcaption>
+            </figure>
+            <figure class="collage-figure collage-figure-b reveal" data-reveal>
+              <img class="collage-img" src="assets/img/Gatorville/gatorville-still-3.jpg" alt="Gatorville still">
+            </figure>
+            <div class="collage-figure-c-row">
+              <figure class="collage-figure collage-figure-c reveal" data-reveal>
+                <img class="collage-img" src="assets/img/Gatorville/gatorville-still-2.jpg" alt="Gatorville still">
+              </figure>
+              <dl class="film-credits reveal" data-reveal>
+                <div class="credit-row"><dt>Director</dt><dd>Freddie Gluck</dd></div>
+                <div class="credit-row"><dt>Producers</dt><dd>Chloe Campion, Freddie Gluck, Matteo Moretti</dd></div>
+                <div class="credit-row"><dt>Executive Producer</dt><dd>Caitlyn Greene, Freddie Gluck, Timothy Zaug</dd></div>
+                <div class="credit-row"><dt>Editor</dt><dd>Freddie Gluck</dd></div>
+                <div class="credit-row"><dt>Associate Producer</dt><dd>Ben Hunter, Lisa Laursen, Christopher Wirth, James R Stephens Jr.</dd></div>
+                <div class="credit-row"><dt>Composer</dt><dd>Luca Moretti</dd></div>
+                <div class="credit-row"><dt>Assistant Camera</dt><dd>Ben Hunter</dd></div>
+                <div class="credit-row"><dt>Sound Design/Mix/Master</dt><dd>Calvin Pia</dd></div>
+                <div class="credit-row"><dt>Color</dt><dd>Stephen Derluguian</dd></div>
+              </dl>
+            </div>
+          </div>
+        </div>
+
+        <div class="film-collage film-collage-earthquakes" data-collage="earthquakes">
+          <div class="earthquakes-stage reveal" data-reveal>
+            <div class="earthquakes-still">
+              <div class="earthquakes-img-wrap">
+                <img class="film-still" src="assets/img/like-little-earthquakes-still.jpg" alt="Like Little Earthquakes still">
+              </div>
+              <div class="coming-soon">Coming Soon</div>
+            </div>
+          </div>
+          <div class="film-meta reveal" data-reveal>
+            <p class="film-desc">As a series of lasts come to fruition, dinosaur caretaker Guy Gsell faces the final days of a world he spent 15 years keeping alive. Composed, produced, mixed and mastered original score.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="page-about" class="page page-about">
+      <div class="about-intro">
+        <div class="panel">
+          <h1 class="panel-title">About</h1>
+          <p class="about-text">Luca Moretti is a creative working across image and sound. Member of the <a class="glitch-shake goodbye-red" href="https://www.instagram.com/goodbyeassociation/" target="_blank" rel="noopener">GOODBYE ASSOCIATION®</a>, producer, musician, filmmaker, pianist. <span class="about-name-mono">moretti incorporated</span> simply serves as the umbrella for that work.</p>
+        </div>
+      </div>
+      <div class="about-red">
+        <div class="about-photo-wrap">
+          <img class="about-photo" src="assets/img/IMG_3919.jpeg" alt="">
+          <span class="about-photo-caption">MMXXIII</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <button id="mute-toggle" class="mute-toggle scribble-target" aria-label="Toggle sound">
+      <svg class="icon speaker-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M3,10 L3,14 L7,14 L12,18.5 L12,5.5 L7,10 Z" fill="currentColor" stroke="none"/>
+        <path class="wave wave-1" d="M15.5,9 C16.8,10.2 16.8,13.8 15.5,15"/>
+        <path class="wave wave-2" d="M18,6.5 C20.5,9 20.5,15 18,17.5"/>
+        <line class="mute-x" x1="15" y1="9" x2="21" y2="15"/>
+        <line class="mute-x" x1="21" y1="9" x2="15" y2="15"/>
+      </svg>
+    </button>
+  </footer>
+
+<script src="script.js"></script>
+</body>
+</html>
