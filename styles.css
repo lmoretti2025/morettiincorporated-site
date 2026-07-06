@@ -455,10 +455,40 @@ main{
   display:flex;
 }
 
-/* Music page's panel (title, photo, release) is centered in the
-   viewport as a whole, rather than left-anchored like Film/About */
+/* Music page now opens with the Gatorville collage (long-scroll,
+   same top-anchored treatment Film previously used) followed by the
+   piano demo tapes release panel at the bottom - no longer a single
+   centered screen */
 #page-music{
-  justify-content:center;
+  align-items:flex-start;
+}
+
+/* Gatorville title - sits directly above the first (top-left)
+   collage image, inside that same figure, instead of the sticky
+   centered overlay it used on the old Film page */
+.gatorville-title{
+  margin:0 0 16px 0;
+}
+.gatorville-title-link{
+  display:inline-block;
+  font-size: clamp(20px, 2.6vw, 30px);
+  font-weight:400;
+  color:var(--white-bright);
+  letter-spacing:0.3px;
+  text-decoration:none;
+  transition: opacity .25s var(--ease);
+}
+.gatorville-title-link:hover{
+  opacity:0.7;
+}
+
+.music-release-panel{
+  /* lives inside .collage-images now (same box the collage photos
+     are centered within), but centered rather than left-flush like
+     the staggered collage figures */
+  align-self:center;
+  width:100%;
+  margin-top:7vh;
 }
 
 /* About page: bio fills the first screen, then a solid red panel
@@ -508,10 +538,13 @@ main{
   white-space:nowrap;
 }
 
-/* Film page can run longer than one viewport - start content at the
-   top instead of vertically centering it */
-#page-film{
-  align-items:flex-start;
+/* Film page is gated for now - just a centered "Coming Soon"
+   placeholder, so use the default centered layout instead of the
+   top-anchored one the long-scroll collage used to need */
+.film-coming-soon-wrap{
+  position:relative;
+  width:100%;
+  min-height:50vh;
 }
 
 .panel{
@@ -565,11 +598,12 @@ main{
   flex-direction:column;
   gap:16px;
   max-width:400px;
+  margin:0 auto;
 }
 .bandcamp-embed{
   border:0;
   width:100%;
-  height:472px;
+  height:150px;
   border-radius:2px;
 }
 .release-meta{
@@ -648,6 +682,7 @@ main{
 
 .film-scroll{
   position:relative;
+  width:100%;
   padding: 0 40px 16vh 40px;
 }
 
@@ -705,6 +740,12 @@ a.film-sticky-word.active:hover{
   letter-spacing:2px;
   text-transform:uppercase;
   color:var(--white-dim);
+  opacity:0;
+  pointer-events:none;
+  transition: opacity .25s var(--ease);
+}
+.film-sticky-sub.active{
+  opacity:1;
   pointer-events:none;
 }
 

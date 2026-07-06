@@ -471,19 +471,23 @@
     });
   })();
 
-  /* ---------------- film page: sticky title swap ---------------- */
+  /* ---------------- music page: sticky title swap ---------------- */
+  /* (originally built for the old Film page's Gatorville/earthquakes
+     swap - now reused on the Music page, swapping between
+     "Gatorville" and "Piano Demo Tape I" as each section scrolls
+     through the vertical center of the viewport) */
 
   (function filmPageScroll() {
-    var filmPage = document.getElementById("page-film");
+    var filmPage = document.getElementById("page-music");
     if (!filmPage) return;
 
     // crossfade the sticky title between "Gatorville" and
-    // "like little earthquakes" depending on which collage section
-    // currently sits at the vertical center of the viewport
+    // "Piano Demo Tape I" depending on which section currently sits
+    // at the vertical center of the viewport
     var collageSections = Array.prototype.slice.call(
       filmPage.querySelectorAll("[data-collage]")
     );
-    var stickyWords = filmPage.querySelectorAll(".film-sticky-word");
+    var stickyWords = filmPage.querySelectorAll(".film-sticky-word, .film-sticky-sub[data-word]");
     if (collageSections.length && stickyWords.length) {
       var ticking = false;
 
