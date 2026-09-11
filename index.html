@@ -10,9 +10,20 @@
 <link rel="icon" type="image/png" sizes="48x48" href="assets/img/favicon-48.png">
 <link rel="icon" type="image/png" sizes="512x512" href="assets/img/favicon-512.png">
 <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<meta name="description" content="Luca Moretti: composer, producer, musician, filmmaker and pianist. Original scores for Gatorville, This is the House and like little earthquakes.">
+<link rel="canonical" href="https://morettiincorporated.com/">
+<meta name="theme-color" content="#000000">
+<!-- link previews (iMessage, Instagram DMs, X, Facebook...) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="moretti incorporated">
+<meta property="og:title" content="moretti incorporated">
+<meta property="og:description" content="Luca Moretti: composer, producer, musician, filmmaker and pianist. Original scores for Gatorville, This is the House and like little earthquakes.">
+<meta property="og:url" content="https://morettiincorporated.com/">
+<meta property="og:image" content="https://morettiincorporated.com/assets/img/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="moretti incorporated">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -25,14 +36,34 @@
   <audio id="channel-audio" preload="auto"></audio>
 
   <div id="channel-controls">
-    <button id="channel-button" class="channel-button" type="button">
-      <span class="channel-hint">tap to switch channels</span>
-      <span class="channel-button-badge">
-        <svg class="icon channel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <polyline points="7,10 12,5 17,10"/>
-          <polyline points="7,14 12,19 17,14"/>
+    <!-- the channel dial: an old TV tuning knob. script.js draws the tick
+         ring, boils the knob's outline, clacks it round to each new
+         channel and updates the readout (see "channel dial") -->
+    <button id="channel-button" class="channel-button" type="button" aria-label="Change channel">
+      <span class="channel-hint">turn the dial</span>
+      <span class="dial-wrap">
+        <svg class="dial" viewBox="0 0 100 100" aria-hidden="true">
+          <defs>
+            <filter id="dial-shadow-blur" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="2.2"/></filter>
+            <radialGradient id="dial-sheen-fill" cx="40%" cy="33%" r="68%">
+              <stop offset="0" stop-color="#fff" stop-opacity="0.24"/>
+              <stop offset="0.55" stop-color="#fff" stop-opacity="0.06"/>
+              <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <g class="dial-ticks"></g>
+          <!-- bottom to top: the soft shadow the knob casts on the panel,
+               its face, a fixed sheen, and the pointer -->
+          <ellipse class="dial-cast-shadow" cx="51" cy="56" rx="31" ry="30" filter="url(#dial-shadow-blur)"></ellipse>
+          <g class="dial-knob"><path class="dial-rim"></path></g>
+          <circle class="dial-sheen" cx="50" cy="50" r="28.5" fill="url(#dial-sheen-fill)"></circle>
+          <g class="dial-knob">
+            <circle class="dial-hub" cx="50" cy="50" r="9"></circle>
+            <line class="dial-pointer" x1="50" y1="41" x2="50" y2="25"></line>
+          </g>
         </svg>
       </span>
+      <span class="dial-readout">Tap &lt; &gt;</span>
     </button>
   </div>
 
@@ -40,23 +71,18 @@
     <a href="#" id="logo" class="logo">morett<span class="logo-eye" data-eye="l"><span class="eye-glyph">i</span><span class="eye-fx" aria-hidden="true"><span class="eye-dot"><span class="eye-dot-open">.</span><span class="eye-dot-closed">-</span></span><svg class="eye-stem" viewBox="0 0 8 20" aria-hidden="true"><path class="stem-path" d="M4,0 C4,7 4,13 4,20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" vector-effect="non-scaling-stroke"><animate attributeName="d" dur="0.3s" repeatCount="indefinite" values="M4,0 C4,7 4,13 4,20;M4,0 C7,7 1,13 4,20;M4,0 C4,7 4,13 4,20;M4,0 C1,7 7,13 4,20;M4,0 C4,7 4,13 4,20" /></path></svg></span></span><span class="logo-mouth-gap">&nbsp;<span class="logo-mouth" aria-hidden="true">_</span></span><span class="logo-eye" data-eye="r"><span class="eye-glyph">i</span><span class="eye-fx" aria-hidden="true"><span class="eye-dot"><span class="eye-dot-open">.</span><span class="eye-dot-closed">-</span></span><svg class="eye-stem" viewBox="0 0 8 20" aria-hidden="true"><path class="stem-path" d="M4,0 C4,7 4,13 4,20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" vector-effect="non-scaling-stroke"><animate attributeName="d" dur="0.3s" repeatCount="indefinite" values="M4,0 C4,7 4,13 4,20;M4,0 C7,7 1,13 4,20;M4,0 C4,7 4,13 4,20;M4,0 C1,7 7,13 4,20;M4,0 C4,7 4,13 4,20" /></path></svg></span></span>ncorporated</a>
 
     <nav class="site-nav">
-      <a href="#music" class="nav-item scribble-target" data-target="music">
-        <span class="nav-label">Music</span>
+      <a href="#scores" class="nav-item scribble-target" data-target="scores">
+        <span class="nav-label">Scores</span>
         <svg class="scribble-svg" viewBox="0 0 100 30" preserveAspectRatio="none"><path class="scribble-path" d="M4,15 C10,4 18,26 26,10 C34,-2 42,24 50,12 C58,2 66,22 74,11 C82,3 90,20 96,15" /></svg>
       </a>
-      <a href="#film" class="nav-item scribble-target" data-target="film">
-        <span class="nav-label">Film</span>
+      <a href="#music" class="nav-item scribble-target" data-target="music">
+        <span class="nav-label">Music</span>
         <svg class="scribble-svg" viewBox="0 0 100 30" preserveAspectRatio="none"><path class="scribble-path" d="M4,15 C10,4 18,26 26,10 C34,-2 42,24 50,12 C58,2 66,22 74,11 C82,3 90,20 96,15" /></svg>
       </a>
       <a href="#about" class="nav-item scribble-target" data-target="about">
         <span class="nav-label">About</span>
         <svg class="scribble-svg" viewBox="0 0 100 30" preserveAspectRatio="none"><path class="scribble-path" d="M4,15 C10,4 18,26 26,10 C34,-2 42,24 50,12 C58,2 66,22 74,11 C82,3 90,20 96,15" /></svg>
       </a>
-      <a href="https://morettincorporated.gumroad.com/" target="_blank" rel="noopener" class="nav-item scribble-target">
-        <span class="nav-label">Store</span>
-        <svg class="scribble-svg" viewBox="0 0 100 30" preserveAspectRatio="none"><path class="scribble-path" d="M4,15 C10,4 18,26 26,10 C34,-2 42,24 50,12 C58,2 66,22 74,11 C82,3 90,20 96,15" /></svg>
-      </a>
-
       <a href="https://www.instagram.com/moretti_inc/" target="_blank" rel="noopener" class="nav-item icon-item scribble-target" aria-label="Instagram">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor" stroke="none"/></svg>
         <svg class="scribble-svg icon-scribble" viewBox="0 0 30 30" preserveAspectRatio="none"><path class="scribble-path" d="M4,15 C8,4 14,26 15,15 C16,4 22,26 26,15" /></svg>
@@ -71,61 +97,256 @@
   <main id="main">
     <section id="page-home" class="page active"></section>
 
-    <section id="page-music" class="page">
-      <div class="film-scroll">
+    <!-- ============================================================
+         SCORES - a shelf of poster icons (#scores), each opening its
+         own project page (#scores/<slug>).
 
-        <div class="film-sticky-title">
-          <a class="film-sticky-word active" data-word="gatorville" href="https://gatorvillefilm.com/" target="_blank" rel="noopener">Gatorville</a>
-          <a class="film-sticky-word" data-word="music" href="https://morettii.bandcamp.com/album/piano-demo-tapes-i" target="_blank" rel="noopener">Piano Demo Tapes I</a>
-          <span class="film-sticky-sub" data-word="gatorville">original score</span>
-        </div>
+         TO ADD A PROJECT, two edits, both in this section:
+           1. add a .poster-link to .score-shelf, href="#scores/<slug>"
+           2. copy an <article class="score-project"> and set its
+              data-project to that same <slug>
+         script.js reads the slugs from the articles, so there's no
+         list to update there.
 
-        <div class="film-collage" data-collage="gatorville">
-          <div class="collage-spacer"></div>
-          <div class="collage-images">
-            <figure class="collage-figure collage-figure-a reveal" data-reveal>
-              <img class="collage-img" src="assets/img/Gatorville/gatorville-still-1.jpg" alt="Gatorville still">
-              <figcaption class="film-desc">As childhood memories are made and fade in the same instant, siblings Lily and Bodhi diverge at the dawn of a life beyond their home, a Colorado alligator sanctuary.</figcaption>
-            </figure>
-            <figure class="collage-figure collage-figure-b reveal" data-reveal>
-              <img class="collage-img" src="assets/img/Gatorville/gatorville-still-3.jpg" alt="Gatorville still">
-            </figure>
-            <div class="collage-figure-c-row">
-              <figure class="collage-figure collage-figure-c reveal" data-reveal>
-                <img class="collage-img" src="assets/img/Gatorville/gatorville-still-2.jpg" alt="Gatorville still">
-              </figure>
-              <dl class="film-credits reveal" data-reveal>
-                <div class="credit-row"><dt>Director</dt><dd>Freddie Gluck</dd></div>
-                <div class="credit-row"><dt>Producers</dt><dd>Chloe Campion, Freddie Gluck, Matteo Moretti</dd></div>
-                <div class="credit-row"><dt>Executive Producer</dt><dd>Caitlyn Greene, Freddie Gluck, Timothy Zaug</dd></div>
-                <div class="credit-row"><dt>Editor</dt><dd>Freddie Gluck</dd></div>
-                <div class="credit-row"><dt>Associate Producer</dt><dd>Ben Hunter, Lisa Laursen, Christopher Wirth, James R Stephens Jr.</dd></div>
-                <div class="credit-row"><dt>Composer</dt><dd>Luca Moretti</dd></div>
-                <div class="credit-row"><dt>Assistant Camera</dt><dd>Ben Hunter</dd></div>
-                <div class="credit-row"><dt>Sound Design/Mix/Master</dt><dd>Calvin Pia</dd></div>
-                <div class="credit-row"><dt>Color</dt><dd>Stephen Derluguian</dd></div>
-              </dl>
+         POSTERS live in assets/img/posters/<slug>.jpg. Every poster is
+         shown at the same height and keeps its own proportions, so give
+         each <img> its real width/height attributes - that lets the
+         browser reserve the right space before the image loads. A film
+         with no poster yet uses a still with class="is-standin", which
+         crops it to 2:3 so it sits in line with the others.
+
+         --still-aspect on each <article> sets the crop ratio for that
+         project's stills, so each film keeps its own frame shape.
+         ============================================================ -->
+    <section id="page-scores" class="page">
+
+      <div class="score-shelf">
+        <a class="poster-link" href="#scores/gatorville">
+          <img loading="lazy" decoding="async" class="poster-img" src="assets/img/posters/gatorville.jpg" width="800" height="1200" alt="Gatorville poster">
+          <span class="poster-title">Gatorville</span>
+          <span class="poster-year">2025</span>
+        </a>
+        <a class="poster-link" href="#scores/this-is-the-house">
+          <img loading="lazy" decoding="async" class="poster-img" src="assets/img/posters/this-is-the-house.jpg" width="900" height="1200" alt="This is the House: If I Don&rsquo;t See You, I Love You poster">
+          <span class="poster-title">This is the House: <span class="poster-subtitle">If I Don&rsquo;t See You, I Love You</span></span>
+          <span class="poster-year">2026</span>
+        </a>
+        <a class="poster-link" href="#scores/like-little-earthquakes">
+          <img loading="lazy" decoding="async" class="poster-img" src="assets/img/posters/like-little-earthquakes.jpg" width="800" height="1200" alt="like little earthquakes poster">
+          <span class="poster-title">like little earthquakes</span>
+          <span class="poster-year">2026</span>
+        </a>
+      </div>
+
+      <div class="score-detail">
+        <a class="score-back" href="#scores">&larr; All scores</a>
+
+        <article class="score-project" data-project="gatorville" style="--still-aspect: 2048 / 858;">
+          <div class="score-stage">
+            <div class="score-sticky-title">
+              <div class="score-sticky-inner">
+                <a class="score-sticky-word" href="https://gatorvillefilm.com/" target="_blank" rel="noopener">Gatorville</a>
+                <span class="score-sticky-sub">original score &middot; 2025</span>
+              </div>
             </div>
+            <div class="score-project-spacer"></div>
+            <div class="score-stills">
 
-            <div class="panel music-release-panel" data-collage="music">
-              <img class="music-photo" src="assets/img/15_Pyramides_Le+Caire_2021.jpg" alt="">
-              <div class="release">
-                <iframe id="bandcamp-frame" class="bandcamp-embed" title="piano demo tapes I by MORETTI" src="https://bandcamp.com/EmbeddedPlayer/album=3728561470/size=large/bgcol=000000/linkcol=ffffff/artwork=small/tracklist=false/transparent=true/" seamless loading="lazy"><a href="https://morettii.bandcamp.com/album/piano-demo-tapes-i">piano demo tapes I by MORETTI</a></iframe>
-                <div class="release-meta">
-                  <span class="release-title">Piano Demo Tapes I</span>
-                  <a class="release-link" href="https://morettii.bandcamp.com/album/piano-demo-tapes-i" target="_blank" rel="noopener">Listen on Bandcamp →</a>
+              <!-- score cues laid over the edges of the first two stills, as on
+                   like little earthquakes (see the comment there) -->
+              <figure class="score-figure score-figure-a score-figure-has-cue" data-reveal>
+                <img loading="lazy" decoding="async" class="score-still" src="assets/img/Gatorville/gatorville-still-1.jpg" alt="Gatorville still">
+                <figcaption class="score-synopsis">As childhood memories are made and fade in the same instant, siblings Lily and Bodhi diverge at the dawn of a life beyond their home, a Colorado alligator sanctuary.</figcaption>
+                <div class="scrub score-cue score-cue-over score-cue-over-right" data-reveal data-src="assets/audio/gatorville/gatorville-1.m4a"
+                   data-duration="87.33"
+                   data-peaks="8.3,9.4,12.1,12.2,13.3,11.9,9.1,12.6,8.4,12.7,10.3,12.3,11.7,12.6,12.4,11.4,12.5,11.3,10.4,9.1,11.4,12.0,13.7,12.7,14.5,14.9,14.3,13.2,13.1,15.0,14.2,13.8,13.5,14.3,14.1,13.6,10.8,12.9,12.3,12.3,12.8,11.3,10.5,8.5,6.4,5.5,5.1,4.9"></div>
+              </figure>
+
+              <figure class="score-figure score-figure-b score-figure-has-cue" data-reveal>
+                <img loading="lazy" decoding="async" class="score-still" src="assets/img/Gatorville/gatorville-still-3.jpg" alt="Gatorville still">
+                <div class="scrub score-cue score-cue-over score-cue-over-left" data-reveal data-src="assets/audio/gatorville/credits.m4a"
+                   data-duration="63.57"
+                   data-peaks="12.1,7.4,12.9,12.6,12.3,13.2,7.7,7.1,7.0,7.0,14.3,9.9,12.2,9.9,11.9,13.5,12.3,12.6,12.9,7.5,10.9,13.8,9.6,7.2,12.5,7.9,15.0,9.1,7.6,7.2,6.9,13.9,11.9,7.4,12.3,11.6,12.7,13.4,7.8,7.1,7.0,7.0,7.0,7.0,6.2,4.3,4.3,4.3"></div>
+              </figure>
+
+              <div class="score-figure-c-row">
+                <figure class="score-figure score-figure-c score-figure-has-cue" data-reveal>
+                  <img loading="lazy" decoding="async" class="score-still" src="assets/img/Gatorville/gatorville-still-2.jpg" alt="Gatorville still">
+                  <div class="scrub score-cue score-cue-over score-cue-over-inset" data-reveal data-src="assets/audio/gatorville/reflection.m4a"
+                   data-duration="73.5"
+                   data-peaks="9.2,12.8,11.3,8.0,6.5,6.7,9.5,12.5,11.2,8.2,8.5,8.6,7.6,9.0,13.6,13.7,10.9,7.4,6.3,10.6,9.2,14.9,14.8,15.0,13.1,9.7,12.9,11.5,9.7,9.9,9.3,8.3,6.3,5.5,6.0,8.2,9.9,10.1,10.2,8.8,8.7,9.2,8.0,7.0,6.0,6.5,4.6,4.1"></div>
+                </figure>
+                <dl class="score-credits" data-reveal>
+                  <div class="credit-row"><dt>Director</dt><dd>Freddie Gluck</dd></div>
+                  <div class="credit-row"><dt>Executive Producers</dt><dd>Caitlyn Greene, Freddie Gluck, Tim Zaug</dd></div>
+                  <div class="credit-row"><dt>Producers</dt><dd>Chloe Campion, Freddie Gluck, Matteo Moretti</dd></div>
+                  <div class="credit-row"><dt>Director of Photography</dt><dd>Matteo Moretti</dd></div>
+                  <div class="credit-row"><dt>Editor</dt><dd>Freddie Gluck</dd></div>
+                  <div class="credit-row"><dt>Color</dt><dd>Stephen Derluguian</dd></div>
+                  <div class="credit-row"><dt>Original Score</dt><dd>Luca Moretti</dd></div>
+                  <div class="credit-row"><dt>Sound Mix</dt><dd>Calvin Pia</dd></div>
+                </dl>
+              </div>
+
+            </div>
+          </div>
+          <section class="score-festivals" data-reveal>
+            <h2 class="score-festivals-title">Festivals &amp; Screenings</h2>
+            <ul class="festival-list">
+              <li><span class="festival-name">Big Sky Documentary Film Festival 2026</span><span class="festival-note">World Premiere, Best Short Documentary Competition</span></li>
+              <li><span class="festival-name">IFFBoston 2026</span><span class="festival-note">Grand Jury Prize Documentary Short</span></li>
+              <li><span class="festival-name">Palm Springs International Shortfest 2026</span><span class="festival-note">Best Short Documentary Competition</span></li>
+              <li><span class="festival-name">True/False Film Festival 2026</span><span class="festival-note">Official Selection</span></li>
+              <li><span class="festival-name">Full Frame Documentary Film Festival 2026</span><span class="festival-note">Official Selection</span></li>
+              <li><span class="festival-name">Aspen Shortsfest 2026</span><span class="festival-note">Official Selection</span></li>
+              <li><span class="festival-name">DC/DOX Documentary Film Festival 2026</span><span class="festival-note">Official Selection</span></li>
+              <li><span class="festival-name">Calgary International Film Festival 2026</span><span class="festival-note">International Premiere</span></li>
+              <li><span class="festival-name">Rooftop Film Series 2026</span><span class="festival-note">Official Selection</span></li>
+              <li><span class="festival-name">Middlebury New Filmmakers Festival 2026</span><span class="festival-note">Official Selection</span></li>
+              <li><span class="festival-name">RiverRun International Film Festival 2026</span><span class="festival-note">Official Selection</span></li>
+              <li><span class="festival-name">Sony Future Filmmaker Awards 2026</span><span class="festival-note">Shortlist</span></li>
+              <li><span class="festival-name">AmDocs Film Festival 2026</span><span class="festival-note">Official Selection</span></li>
+              <li><span class="festival-name">International Wildlife Film Festival 2026</span><span class="festival-note">Official Selection</span></li>
+              <li><span class="festival-name">NFFTY 2026</span><span class="festival-note">Official Selection</span></li>
+              <li><span class="festival-name">Taos Film Festival 2026</span><span class="festival-note">Official Selection</span></li>
+              <li><span class="festival-name">Ouray Film Festival 2026</span><span class="festival-note">Official Selection</span></li>
+              <li><span class="festival-name">BEYOND: The Cary Film Festival 2026</span><span class="festival-note">Official Selection</span></li>
+              <li><span class="festival-name">Drunken Film Fest Oakland 2026</span><span class="festival-note">Official Selection</span></li>
+            </ul>
+          </section>
+        </article>
+
+        <article class="score-project" data-project="this-is-the-house" style="--still-aspect: 3 / 2;">
+          <div class="score-stage">
+            <div class="score-sticky-title">
+              <div class="score-sticky-inner">
+                <a class="score-sticky-word" href="https://www.claudiaowusu.com/films-2/this-is-the-house-if-i-dont-see-you-i-love-you" target="_blank" rel="noopener">This is the House: If I Don&rsquo;t See You, I Love You</a>
+                <span class="score-sticky-sub">original score &middot; 2026</span>
+              </div>
+            </div>
+            <div class="score-project-spacer"></div>
+            <div class="score-stills">
+
+              <!-- two stills only: the open space to the left of the first
+                   one holds a score cue (reaching over the still's edge) and,
+                   lower down, the synopsis -->
+              <div class="score-lead-row">
+                <div class="score-lead-side">
+                <div class="scrub score-cue score-cue-reach-right" data-reveal data-src="assets/audio/this-is-the-house/tith-1.m4a"
+                   data-duration="84.22"
+                   data-peaks="5.0,13.8,13.1,15.0,13.6,10.2,7.5,6.3,4.8,7.7,10.3,7.5,6.3,14.0,13.4,14.8,13.3,10.3,7.9,7.3,7.6,9.1,7.4,8.6,8.4,8.0,6.9,5.6,7.6,5.4,5.2,8.8,6.7,6.2,9.0,12.4,9.7,7.3,7.1,6.8,6.5,6.2,5.8,5.7,5.7,5.0,5.1,5.0"></div>
+                <p class="score-synopsis score-synopsis-beside" data-reveal>A Ghanaian-American father and daughter duo work through their crowded basement in search of family archives. Through intimate questions and answers, they reconcile the distance caused by immigration, divorce, and loss.</p>
                 </div>
+                <figure class="score-figure score-figure-b" data-reveal>
+                  <img loading="lazy" decoding="async" class="score-still" src="assets/img/this-is-the-house/this-is-the-house-3.jpg" alt="This is the House still">
+                </figure>
+              </div>
+
+              <div class="score-figure-c-row">
+                <figure class="score-figure score-figure-c" data-reveal>
+                  <img loading="lazy" decoding="async" class="score-still" src="assets/img/this-is-the-house/this-is-the-house-2.jpg" alt="This is the House still">
+                </figure>
+                <div class="score-c-side">
+                <dl class="score-credits" data-reveal>
+                  <div class="credit-row"><dt>Writer &amp; Director</dt><dd>Claudia Owusu</dd></div>
+                  <div class="credit-row"><dt>Producer</dt><dd>Lauren Todd</dd></div>
+                  <div class="credit-row"><dt>Starring</dt><dd>Claudia Owusu, Baffour Owusu</dd></div>
+                  <div class="credit-row"><dt>Director of Photography &amp; Editor</dt><dd>Matteo Moretti</dd></div>
+                  <div class="credit-row"><dt>Original Score</dt><dd>Luca Moretti</dd></div>
+                  <div class="credit-row"><dt>Production</dt><dd>Nana Yaa Studios, Back of House</dd></div>
+                </dl>
+                <div class="scrub score-cue score-cue-reach-left" data-reveal data-src="assets/audio/this-is-the-house/tith-2.m4a"
+                   data-duration="57.67"
+                   data-peaks="4.1,4.9,5.6,5.4,6.0,8.0,7.8,7.2,6.1,4.9,5.0,6.4,6.4,5.7,5.8,6.0,7.0,12.3,14.9,15.0,14.8,13.2,13.9,14.0,14.0,13.9,13.9,14.0,14.0,14.0,14.0,14.0,14.0,11.2,7.5,5.9,4.9,4.5,4.4,4.3,4.2,4.2,4.1,4.2,4.1,4.1,4.1,4.1"></div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <section class="score-festivals" data-reveal>
+            <h2 class="score-festivals-title">Festivals &amp; Screenings</h2>
+            <ul class="festival-list">
+              <li><span class="festival-name">Cinema Columbus Film Showcase 2026</span><span class="festival-note">Official Selection</span></li>
+              <li><span class="festival-name">DOC NYC 2026</span><span class="festival-note">Official Selection</span></li>
+              <li><span class="festival-name">New Orleans Film Festival 2026</span><span class="festival-note">Official Selection</span></li>
+              <li><span class="festival-name">Yellow Springs Film Festival 2026</span><span class="festival-note">Official Selection</span></li>
+              <li><span class="festival-name">Aesthetica Film Festival 2026</span><span class="festival-note">Official Selection</span></li>
+            </ul>
+          </section>
+        </article>
+
+        <article class="score-project" data-project="like-little-earthquakes" style="--still-aspect: 2400 / 1266;">
+          <div class="score-stage">
+            <div class="score-sticky-title">
+              <div class="score-sticky-inner">
+                <span class="score-sticky-word">like little earthquakes</span>
+                <span class="score-sticky-sub">original score &middot; 2026</span>
+              </div>
+            </div>
+            <div class="score-project-spacer"></div>
+            <div class="score-stills">
+              <!-- same layered collage as the other films. The score cues are
+                   laid over the edges of the first two stills, the way the
+                   stills overlap each other. Each .scrub becomes a waveform
+                   player (script.js -> waveformScrubs): data-peaks is the
+                   track's real loudness in 48 steps, data-duration its length
+                   in seconds. Score cues go unnamed; add data-name="..." to
+                   show a title on one. -->
+              <figure class="score-figure score-figure-a score-figure-has-cue" data-reveal>
+                <img loading="lazy" decoding="async" class="score-still" src="assets/img/like-little-earthquakes/like-little-earthquakes-1.jpg" alt="like little earthquakes still">
+                <figcaption class="score-synopsis">As a series of lasts come to fruition, dinosaur caretaker Guy Gsell faces the final days of a world he spent 15 years keeping alive.</figcaption>
+                <div class="scrub score-cue score-cue-over score-cue-over-right" data-reveal data-src="assets/audio/like-little-earthquakes/dino-prod-1.m4a"
+                   data-duration="27.25"
+                   data-peaks="5.6,7.3,8.1,10.7,8.0,8.2,8.0,8.1,7.9,7.9,9.9,9.1,11.3,9.0,7.8,7.8,8.1,7.9,8.1,7.9,8.0,7.7,8.0,7.8,8.2,9.7,12.6,15.0,11.7,10.0,11.5,12.2,13.8,9.6,12.5,10.3,10.0,10.0,10.5,11.1,11.6,9.9,9.0,9.0,9.2,10.6,6.1,5.1"></div>
+              </figure>
+
+              <figure class="score-figure score-figure-b score-figure-has-cue" data-reveal>
+                <img loading="lazy" decoding="async" class="score-still" src="assets/img/like-little-earthquakes/like-little-earthquakes-2.jpg" alt="like little earthquakes still">
+                <div class="scrub score-cue score-cue-over score-cue-over-left" data-reveal data-src="assets/audio/like-little-earthquakes/dino-prod-2.m4a"
+                   data-duration="57.98"
+                   data-peaks="4.3,4.5,4.8,5.1,5.3,5.3,8.3,8.6,6.5,7.2,8.4,11.7,14.3,13.6,7.7,10.0,9.4,8.8,14.1,12.8,11.4,8.9,9.3,10.4,10.1,14.0,15.0,13.9,11.6,9.6,11.6,9.7,7.7,8.5,11.1,13.1,11.4,8.4,8.7,7.4,7.1,6.2,5.5,5.0,4.6,4.4,4.4,4.4"></div>
+              </figure>
+
+              <div class="score-figure-c-row">
+                <figure class="score-figure score-figure-c" data-reveal>
+                  <img loading="lazy" decoding="async" class="score-still" src="assets/img/like-little-earthquakes/like-little-earthquakes-3.jpg" alt="like little earthquakes still">
+                </figure>
+                <dl class="score-credits" data-reveal>
+                  <div class="credit-row"><dt>Directors</dt><dd>Matteo Moretti, Freddie Gluck</dd></div>
+                  <div class="credit-row"><dt>Cinematography</dt><dd>Matteo Moretti, Freddie Gluck</dd></div>
+                  <div class="credit-row"><dt>Editors</dt><dd>Freddie Gluck, Matteo Moretti</dd></div>
+                  <div class="credit-row"><dt>Original Score</dt><dd>Luca Moretti</dd></div>
+                  <div class="credit-row"><dt>Additional Music</dt><dd>Jeff Melanson</dd></div>
+                  <div class="credit-row"><dt>Color</dt><dd>Jonnie Sirotek</dd></div>
+                  <div class="credit-row"><dt>Sound</dt><dd>Henrique Andrade</dd></div>
+                  <div class="credit-row"><dt>Poster</dt><dd>Kaiden, Jaya, Kaia</dd></div>
+                </dl>
               </div>
             </div>
           </div>
-        </div>
+        </article>
 
       </div>
     </section>
 
-    <section id="page-film" class="page page-film">
-      <div class="film-coming-soon-wrap">
-        <div class="coming-soon">Coming Soon</div>
+    <!-- ============================================================
+         MUSIC - releases under his own name. One .release-item per
+         release; add more by copying the block.
+         ============================================================ -->
+    <section id="page-music" class="page page-music">
+      <div class="release-list">
+
+        <article class="release-item" data-reveal>
+          <img loading="lazy" decoding="async" class="release-art" src="assets/img/15_Pyramides_Le+Caire_2021.jpg" alt="">
+          <div class="release">
+            <iframe id="bandcamp-frame" class="bandcamp-embed" title="piano demo tapes I by MORETTI" src="https://bandcamp.com/EmbeddedPlayer/album=3728561470/size=large/bgcol=000000/linkcol=ffffff/artwork=small/tracklist=false/transparent=true/" seamless loading="lazy"><a href="https://morettii.bandcamp.com/album/piano-demo-tapes-i">piano demo tapes I by MORETTI</a></iframe>
+            <div class="release-meta">
+              <span class="release-title">Piano Demo Tapes I</span>
+              <a class="release-link" href="https://morettii.bandcamp.com/album/piano-demo-tapes-i" target="_blank" rel="noopener">Listen on Bandcamp &rarr;</a>
+            </div>
+          </div>
+        </article>
+
       </div>
     </section>
 
@@ -133,12 +354,12 @@
       <div class="about-intro">
         <div class="panel">
           <h1 class="panel-title">About</h1>
-          <p class="about-text">Luca Moretti is a creative working across image and sound. Member of the <a class="glitch-shake goodbye-red" href="https://www.instagram.com/goodbyeassociation/" target="_blank" rel="noopener">GOODBYE ASSOCIATION®</a>, producer, musician, filmmaker, pianist. <span class="about-name-mono">moretti incorporated</span> simply serves as the umbrella for that work.</p>
+          <p class="about-text">Luca Moretti is a creative working across image and sound. Member of the <a class="glitch-shake goodbye-red" href="https://www.instagram.com/goodbyeassociation/" target="_blank" rel="noopener">GOODBYE ASSOCIATION&reg;</a>, producer, musician, filmmaker, pianist. <span class="about-name-mono">moretti incorporated</span> simply serves as the umbrella for that work.</p>
         </div>
       </div>
       <div class="about-red">
         <div class="about-photo-wrap">
-          <img class="about-photo" src="assets/img/IMG_3919.jpeg" alt="">
+          <img loading="lazy" decoding="async" class="about-photo" src="assets/img/IMG_3919.jpeg" alt="">
           <span class="about-photo-caption">MMXXIII</span>
         </div>
       </div>
