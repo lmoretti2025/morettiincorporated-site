@@ -439,11 +439,13 @@
     // FEEL plays its own sound, from the video itself (no audioFile), like
     // the title channel; square, so it's shown whole rather than cropped
     "feel": { ch: 6, file: "https://media.morettiincorporated.com/video/feel.mp4", aspect: "square" },
+    // DRAK plays its own sound too
+    "drak": { ch: 9, file: "https://media.morettiincorporated.com/video/drak.mp4", aspect: "landscape" },
     // Solid Fall (the song) over the CAN'T CATCH UP video
     "solid-fall": { ch: 13, file: "https://media.morettiincorporated.com/video/solid-fall.mp4", aspect: "landscape", audioFile: "https://media.morettiincorporated.com/audio/SOLID-FALL.m4a" }
   };
   // the channels on air (the title screen is always on air too, as ch 3)
-  var ALLOWED_CHANNEL_IDS = ["tale-of-the-white-serpent", "thief-and-cobbler-1", "still-waiting", "feel", "solid-fall"];
+  var ALLOWED_CHANNEL_IDS = ["tale-of-the-white-serpent", "thief-and-cobbler-1", "still-waiting", "feel", "drak", "solid-fall"];
   var STATIC_DURATION = 2.6; // seconds, approx length of static-effect.mp4
   var switching = false;
 
@@ -680,24 +682,34 @@
   // direction only decides which way the dial turns to get there. Turning
   // the dial by hand still goes to the exact channel you land on.
   var FIRST_CHANNEL = "still-waiting";
-  var channelBag = [];
-  function nextRandomChannel() {
-    if (currentChannel === "title" && !channelBag.dealt) {
-      channelBag.dealt = true;
-      if (ALLOWED_CHANNEL_IDS.indexOf(FIRST_CHANNEL) !== -1) return FIRST_CHANNEL;
+  var channelBag = null;
+  function shuffledChannels() {
+    var bag = ALLOWED_CHANNEL_IDS.slice();
+    for (var i = bag.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1)), t = bag[i];
+      bag[i] = bag[j]; bag[j] = t;
     }
-    var pick;
-    do {
-      if (!channelBag.length) {
-        channelBag = ALLOWED_CHANNEL_IDS.slice();
-        for (var i = channelBag.length - 1; i > 0; i--) {
-          var j = Math.floor(Math.random() * (i + 1)), t = channelBag[i];
-          channelBag[i] = channelBag[j]; channelBag[j] = t;
-        }
-        channelBag.dealt = true;
+    return bag;
+  }
+  function nextRandomChannel() {
+    if (!channelBag) {
+      // first deal: Still Waiting on top, the rest shuffled underneath
+      channelBag = shuffledChannels().filter(function (id) { return id !== FIRST_CHANNEL; });
+      if (ALLOWED_CHANNEL_IDS.indexOf(FIRST_CHANNEL) !== -1) channelBag.push(FIRST_CHANNEL);
+    }
+    if (!channelBag.length) {
+      channelBag = shuffledChannels();
+      // a fresh bag mustn't open with the channel that's on now
+      if (channelBag.length > 1 && channelBag[channelBag.length - 1] === currentChannel) {
+        channelBag.unshift(channelBag.pop());
       }
+    }
+    var pick = channelBag.pop();
+    // (only possible if the dial was turned by hand onto the next card)
+    if (pick === currentChannel && channelBag.length) {
+      channelBag.unshift(pick);
       pick = channelBag.pop();
-    } while (pick === currentChannel && ALLOWED_CHANNEL_IDS.length > 1);
+    }
     return pick;
   }
 
