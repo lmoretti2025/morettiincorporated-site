@@ -1102,6 +1102,7 @@ a.score-sticky-word:hover{
    ============================================================ */
 
 #page-music{
+  flex-direction:column;
   justify-content:center;
 }
 
@@ -1112,6 +1113,125 @@ a.score-sticky-word:hover{
   width:100%;
   max-width:420px;
   margin:0 auto;
+}
+
+/* ---------- singles carousel (script.js -> songCarousel) ----------
+   One card centered and full-size, the rest fanned out to each side at
+   shrinking scale/opacity - arrows, clicking a side card, and drag/swipe
+   (with the swipe's speed carrying it past extra cards) all just change
+   which index is centered; script.js re-renders every card's transform
+   off that index each time. The centered card always shows a live,
+   playable Spotify embed rather than a link out, so a visitor can
+   actually hear the song without leaving the page. */
+.song-carousel{
+  opacity:0;
+  transform:translateY(36px);
+  transition: opacity 1s var(--ease), transform 1s var(--ease);
+  display:flex;
+  align-items:center;
+  gap:4px;
+  width:100%;
+  max-width:1160px;
+  margin:0 auto 10vh auto;
+}
+.song-carousel.is-visible{
+  opacity:1;
+  transform:translateY(0);
+}
+.song-carousel-arrow{
+  flex:0 0 auto;
+  background:none;
+  border:0;
+  padding:10px;
+  color:var(--white-dim);
+  cursor:pointer;
+  transition:color .25s var(--ease);
+  position:relative;
+  /* cards fan out wide enough at this size to visually reach past the
+     viewport's edge toward these buttons, and a card's z-index (up to
+     100) otherwise sits above an arrow with none set, intercepting the
+     click before it ever reaches the button underneath */
+  z-index:200;
+}
+.song-carousel-arrow:hover{ color:var(--white-bright); }
+.song-carousel-arrow .icon{ width:30px; height:30px; display:block; }
+
+.song-carousel-viewport{
+  position:relative;
+  flex:1 1 auto;
+  height:480px;
+  touch-action:pan-y;
+  cursor:grab;
+}
+.song-carousel-viewport.is-grabbing{ cursor:grabbing; }
+
+.song-carousel-track{
+  list-style:none;
+  margin:0;
+  padding:0;
+}
+.song-carousel-item{
+  position:absolute;
+  top:50%;
+  left:50%;
+  width:340px;
+  will-change:transform;
+}
+.song-carousel-viewport:not(.is-live) .song-carousel-item,
+.song-carousel-viewport:not(.is-live) .song-carousel-card,
+.song-carousel-viewport:not(.is-live) .song-carousel-player-slot{
+  /* only animate the final eased hop into place (arrow/click, or the
+     last bit of a coast settling onto a song) - while a drag or the
+     momentum coast itself is driving pos frame by frame, position AND
+     scale/opacity must track that with zero lag, or it fights the
+     motion and feels sluggish/rubber-bandy instead of a true coast */
+  transition: transform .5s var(--ease), opacity .5s var(--ease);
+}
+.song-carousel-card{
+  position:relative;
+  cursor:pointer;
+}
+.song-carousel-cover{
+  display:block;
+  width:100%;
+  height:auto;         /* without this, the img's own width/height="300"
+                           HTML attributes pin height to 300px and the
+                           aspect-ratio below never gets to run, so the
+                           square crop came out stretched tall */
+  aspect-ratio:1/1;
+  object-fit:cover;
+  border-radius:4px;
+  -webkit-user-drag:none;
+  user-select:none;
+  box-shadow: 0 10px 26px -8px rgba(0,0,0,0.6);
+}
+.song-carousel-player-slot{
+  /* positioned out of flow so the active card's extra height (the
+     embedded player) never changes .song-carousel-item's own box - if
+     it did, every item's shared top:50% centering would shift per
+     item and the cards would drift out of alignment with each other */
+  position:absolute;
+  left:50%;
+  top:100%;
+  /* Spotify's own compact embed silently drops its play button (leaving
+     only the cover/title, which just link out to Spotify) once it's
+     narrower than ~280px - well above this carousel's card width, so
+     the slot is sized independently of the card rather than at 100% of
+     it, which is exactly why songs looked unplayable before */
+  width:400px;
+  max-width:94vw;
+  margin-top:10px;
+  /* transform (translateX(-50%) plus a scale matching the card's own)
+     and opacity are both set from script.js, in step with the card -
+     the slot only ever really holds an iframe for whichever song is
+     current, but it fades/scales/moves right along with its card as
+     the carousel moves instead of hard-cutting in and out */
+}
+.song-carousel-player-slot iframe{
+  display:block;
+  width:100%;
+  border:0;
+  border-radius:12px;
 }
 
 .release-item{
@@ -1258,6 +1378,9 @@ a.score-sticky-word:hover{
   .scrub.score-cue-reach-right, .scrub.score-cue-reach-left{ width:100%; }
   .score-credits{ padding-left:0; padding-top:24px; }
   .release-list{ gap:10vh; }
+  .song-carousel{ gap:0; }
+  .song-carousel-viewport{ height:380px; }
+  .song-carousel-item{ width:220px; }
   .about-photo-wrap{ max-width:78vw; }
   .about-photo{ max-height:46vh; }
 }

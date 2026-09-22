@@ -445,7 +445,7 @@
     "solid-fall": { ch: 13, file: "https://media.morettiincorporated.com/video/solid-fall.mp4", aspect: "landscape", audioFile: "https://media.morettiincorporated.com/audio/SOLID-FALL.m4a" }
   };
   // the channels on air (the title screen is always on air too, as ch 3)
-  var ALLOWED_CHANNEL_IDS = ["tale-of-the-white-serpent", "thief-and-cobbler-1", "still-waiting", "feel", "drak", "solid-fall"];
+  var ALLOWED_CHANNEL_IDS = ["tale-of-the-white-serpent", "thief-and-cobbler-1", "still-waiting", "feel", "solid-fall"];
   var STATIC_DURATION = 2.6; // seconds, approx length of static-effect.mp4
   var switching = false;
 
@@ -724,7 +724,7 @@
     if (!channelId || channelId === currentChannel) return;
     // mid-switch (the static lasts ~0.6s)? catch it on the way out
     if (switching) { window.setTimeout(function () { tuneTo(channelId, dir); }, 120); return; }
-    if (scrubPlayers) scrubPlayers.siteMusicTakeover();
+    stopAllSound();
     setMuted(false);
     switchChannel(channelId, dir);
     var p = video.play();
@@ -868,9 +868,9 @@
 
   muteBtn.addEventListener("click", function () {
     setMuted(body.classList.contains("unmuted"));
-    // turning the site's sound on while a score track has it? the track
-    // steps aside (see waveformScrubs)
-    if (body.classList.contains("unmuted") && scrubPlayers) scrubPlayers.siteMusicTakeover();
+    // turning the site's sound on while a score cue or a carousel single
+    // has it? that sound steps aside (see takeoverSound/stopAllSound)
+    if (body.classList.contains("unmuted")) stopAllSound();
     scribbleOn(muteBtn);
     // try to (re)start playback now that we have a user gesture
     var p = video.play();
@@ -927,6 +927,68 @@
     });
   })();
 
+  /* ---------------- shared "one sound at a time" helpers ---------------- */
+  // Both the waveform scrub players (score cues) and the Spotify singles
+  // carousel need to duck the site's own background music while their
+  // sound plays, and hand it back afterward - sharing one pausedSiteMusic
+  // flag between them means one doesn't accidentally resume the site's
+  // music while the other is still the reason it's off.
+  var pausedSiteMusic = false; // true while we're the reason the site's music is off
+
+  function pauseSiteMusic() {
+    // nothing to pause if the visitor never turned the site's sound on
+    if (pausedSiteMusic || !body.classList.contains("unmuted")) return;
+    pausedSiteMusic = true;
+    video.muted = true;
+    // the separate soundtrack is paused rather than muted, so it picks up
+    // where it left off instead of carrying on unheard
+    if (channelAudioEl) channelAudioEl.pause();
+  }
+
+  function resumeSiteMusic() {
+    if (!pausedSiteMusic) return;
+    pausedSiteMusic = false;
+    // the visitor may have muted the site in the meantime - respect that
+    if (!body.classList.contains("unmuted")) return;
+    setMuted(false);
+    if (channelAudioEl && channelAudioEl.getAttribute("src")) {
+      var ap = channelAudioEl.play();
+      if (ap && ap.catch) ap.catch(function () {});
+    }
+  }
+
+  // Only one of {the site's own music, a score cue, a carousel single}
+  // ever plays at once. Each sound source calls takeoverSound(stop) the
+  // moment IT starts, passing a stable reference to its own stop
+  // function; if some other source was the one playing, that reference
+  // is what gets called to silence it. releaseSound(stop) is the other
+  // half - a source calls it with that same reference once its sound
+  // has actually stopped (paused, ended...), and the site's music only
+  // comes back if that source was still the one holding it, so e.g. an
+  // old cue's belated "ended" can't resume music over a newer sound.
+  var activeSoundStop = null;
+
+  function takeoverSound(stop) {
+    if (activeSoundStop && activeSoundStop !== stop) activeSoundStop();
+    activeSoundStop = stop;
+    pauseSiteMusic();
+  }
+
+  function releaseSound(stop) {
+    if (activeSoundStop !== stop) return;
+    activeSoundStop = null;
+    resumeSiteMusic();
+  }
+
+  // called when the visitor turns the site's own sound on directly (the
+  // mute button, changing channel) - whatever was playing steps aside,
+  // and there's nothing to resume since the site's music is already back
+  function stopAllSound() {
+    if (activeSoundStop) { activeSoundStop(); activeSoundStop = null; }
+    pausedSiteMusic = false;
+    window.dispatchEvent(new Event("soundtakeover"));
+  }
+
   /* ---------------- waveform scrub players ---------------- */
   // A plain-JS port of the WaveformScrub component: a card with a
   // play / pause / replay button, a seconds countdown, and a bar waveform
@@ -942,37 +1004,14 @@
   // project page stops the track and brings the site's music back. And
   // if the visitor turns the site's sound on themselves mid-track - the
   // mute button, or changing channel - the track steps aside instead.
-  var scrubPlayers = (function waveformScrubs() {
+  (function waveformScrubs() {
     var roots = document.querySelectorAll(".scrub[data-src]");
     var active = null;           // the player holding the audio (playing or paused mid-track)
-    var pausedSiteMusic = false; // true while we're the reason the site's music is off
 
     var ICONS =
       '<svg class="scrub-icon scrub-icon-play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 4v16a1 1 0 0 0 1.524 .852l13 -8a1 1 0 0 0 0 -1.704l-13 -8a1 1 0 0 0 -1.524 .852z"/></svg>' +
       '<svg class="scrub-icon scrub-icon-pause" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 4h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h2a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2z"/><path d="M17 4h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h2a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2z"/></svg>' +
       '<svg class="scrub-icon scrub-icon-replay" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4.55a8 8 0 0 1 6 14.9m0 -4.45v5h5"/><path d="M5.63 7.16l0 .01"/><path d="M4.06 11l0 .01"/><path d="M4.63 15.1l0 .01"/><path d="M7.16 18.37l0 .01"/><path d="M11 19.94l0 .01"/></svg>';
-
-    function pauseSiteMusic() {
-      // nothing to pause if the visitor never turned the site's sound on
-      if (pausedSiteMusic || !body.classList.contains("unmuted")) return;
-      pausedSiteMusic = true;
-      video.muted = true;
-      // the separate soundtrack is paused rather than muted, so it picks up
-      // where it left off instead of carrying on unheard
-      if (channelAudioEl) channelAudioEl.pause();
-    }
-
-    function resumeSiteMusic() {
-      if (!pausedSiteMusic) return;
-      pausedSiteMusic = false;
-      // the visitor may have muted the site in the meantime - respect that
-      if (!body.classList.contains("unmuted")) return;
-      setMuted(false);
-      if (channelAudioEl && channelAudioEl.getAttribute("src")) {
-        var ap = channelAudioEl.play();
-        if (ap && ap.catch) ap.catch(function () {});
-      }
-    }
 
     function barsHTML(peaks) {
       return peaks.map(function (h) {
@@ -1067,10 +1106,10 @@
 
       function play() {
         if (isFinished()) current = 0;
-        // another track mid-way? it steps aside, and the site's music stays paused
-        if (active && active !== player) active.pause();
+        // another cue mid-way, a carousel single, or the site's own
+        // background music - whatever it is steps aside here
         active = player;
-        pauseSiteMusic();
+        takeoverSound(pause);
         if (Math.abs(audio.currentTime - current) > 0.05) seekAudio();
         playing = true;
         var pr = audio.play();
@@ -1078,7 +1117,8 @@
           pr.catch(function () {
             // couldn't play (file missing, blocked...) - hand the sound back
             playing = false;
-            if (active === player) { active = null; resumeSiteMusic(); }
+            if (active === player) active = null;
+            releaseSound(pause);
             render();
           });
         }
@@ -1108,7 +1148,8 @@
         playing = false;
         current = duration;
         render();
-        if (active === player) { active = null; resumeSiteMusic(); }
+        if (active === player) active = null;
+        releaseSound(pause);
       });
 
       btn.addEventListener("click", function () {
@@ -1173,19 +1214,334 @@
       if (!active) return;
       var article = active.root.closest(".score-project");
       if (article && article.classList.contains("is-current")) return;
+      var stop = active.pause;
       active.pause();
       active = null;
-      resumeSiteMusic();
+      releaseSound(stop);
     });
 
-    return {
-      // called when the visitor turns the site's own sound on (mute button,
-      // changing channel): any track steps aside, and there's nothing to
-      // resume later because the site's music is already back
-      siteMusicTakeover: function () {
-        if (active) { active.pause(); active = null; }
-        pausedSiteMusic = false;
+    // the visitor turned the site's own sound on directly (mute button,
+    // changing channel) and stopAllSound() has already stopped whatever
+    // cue was playing - just forget it locally too, so e.g. its "ended"
+    // handler later doesn't find a stale `active` still pointing at it
+    window.addEventListener("soundtakeover", function () {
+      active = null;
+    });
+  })();
+
+  /* ---------------- singles carousel (music page) ----------------
+     Every card's position/scale/opacity is a function of its distance
+     from `pos`, a single continuous number (2.35 means "just past song
+     2, headed for song 3") - arrows, clicking a side card, dragging,
+     and coasting afterward are all just different ways of changing
+     `pos`, read by one render(). Dragging moves `pos` with the pointer
+     1:1; releasing it hands off to a real momentum loop - `pos` keeps
+     changing under its own velocity, which decays under friction every
+     frame, exactly like a trackpad/scroll-wheel fling, rather than
+     pre-computing a fixed number of songs to jump and easing straight
+     there. Once that decay drops below a threshold it eases the last
+     bit into whichever song is nearest and *that* becomes the new
+     committed `current` - the only thing `current` is for is knowing
+     which card should hold the live Spotify embed, which is switched
+     once things settle rather than on every card `pos` sweeps past
+     mid-coast. The active card always holds that live embed, swapped
+     in on the fly, so the song is actually playable in place rather
+     than only linking out to Spotify.
+
+     The embed is built with Spotify's IFrame API (rather than a plain
+     <iframe src="...">) specifically so real playback_update events are
+     available - a bare iframe can't tell us whether it's actually
+     playing, and this is what lets the site's own background music duck
+     out while a song plays and come back once it's paused/ended, the
+     same "one sound at a time" rule the score cues follow. */
+  var spotifyIframeApiPromise = null;
+  function loadSpotifyIframeApi() {
+    if (spotifyIframeApiPromise) return spotifyIframeApiPromise;
+    spotifyIframeApiPromise = new Promise(function (resolve) {
+      var previousCallback = window.onSpotifyIframeApiReady;
+      window.onSpotifyIframeApiReady = function (IFrameAPI) {
+        if (previousCallback) previousCallback(IFrameAPI);
+        resolve(IFrameAPI);
+      };
+      var script = document.createElement("script");
+      script.src = "https://open.spotify.com/embed/iframe-api/v1";
+      script.async = true;
+      document.head.appendChild(script);
+    });
+    return spotifyIframeApiPromise;
+  }
+
+  (function songCarousel() {
+    var root = document.querySelector(".song-carousel");
+    var viewport = root && root.querySelector(".song-carousel-viewport");
+    var track = document.getElementById("song-carousel-track");
+    var prevBtn = root && root.querySelector(".song-carousel-arrow-prev");
+    var nextBtn = root && root.querySelector(".song-carousel-arrow-next");
+    if (!root || !viewport || !track) return;
+
+    var items = Array.prototype.slice.call(track.children);
+    var n = items.length;
+    if (!n) return;
+
+    var cards = items.map(function (item) { return item.querySelector(".song-carousel-card"); });
+    var slots = items.map(function (item) { return item.querySelector(".song-carousel-player-slot"); });
+    var current = 0;   // committed index - which card holds the embed
+    var pos = 0;        // continuous position everything renders from
+    var itemWidth = 280; // measured below; this default matches the CSS
+    var spacing = 174;   // horizontal distance between adjacent centers
+
+    // shortest signed distance from p to i around the n-song circle -
+    // works for a fractional p same as an integer one, so it's equally
+    // at home mid-coast as it is at rest
+    function wrappedOffset(i, p) {
+      var raw = i - p;
+      return raw - n * Math.round(raw / n);
+    }
+
+    // scale/opacity at whole-number distances 0,1,2,3+ from the active
+    // card, interpolated between those points by fractional distance so
+    // a card visibly grows/brightens as it's dragged toward center
+    // instead of only snapping once the drag ends
+    var SCALE_STOPS = [1, 0.8, 0.6, 0.45];
+    var OPACITY_STOPS = [1, 0.55, 0.25, 0];
+    function lerpStops(dist, stops) {
+      if (dist <= 0) return stops[0];
+      var idx = Math.floor(dist);
+      if (idx >= stops.length - 1) return stops[stops.length - 1];
+      var frac = dist - idx;
+      return stops[idx] + (stops[idx + 1] - stops[idx]) * frac;
+    }
+
+    // the IFrame API doesn't build its iframe *inside* the element you
+    // hand it - it replaces that element outright with the iframe, so a
+    // reference to the original element goes stale/detached the moment
+    // the controller is created. playerWrapper is what actually moves
+    // between slots as the active song changes; playerHost only exists
+    // to hand the API something to replace, and is never touched again
+    // once that's happened.
+    var playerWrapper = document.createElement("div");
+    var playerHost = document.createElement("div");
+    playerWrapper.appendChild(playerHost);
+    var playerController = null;    // set once the API hands back a controller
+    var playerControllerUri = null; // uri the controller currently holds, incl. mid-creation
+    var playerIsPlaying = false;    // last playback_update's isPaused, inverted
+
+    // this carousel's one entry in the site-wide "one sound at a time"
+    // registry (takeoverSound/releaseSound) - a stable function
+    // reference so later calls are recognized as "the same source"
+    function stopSpotify() {
+      if (playerController) playerController.pause();
+    }
+
+    function measure() {
+      itemWidth = items[0].getBoundingClientRect().width || itemWidth;
+      // cards overlap like a fanned shelf rather than sitting edge to
+      // edge - about three-fifths of a card's width apart
+      spacing = itemWidth * 0.62;
+    }
+
+    function placePlayer(index) {
+      var slot = slots[index];
+      if (!slot) return;
+      if (playerWrapper.parentNode !== slot) slot.appendChild(playerWrapper);
+      var uri = "spotify:track:" + items[index].getAttribute("data-track");
+      if (uri === playerControllerUri) return;
+      var wasPlaying = playerIsPlaying;
+      playerControllerUri = uri;
+
+      if (playerController) {
+        playerController.loadUri(uri);
+        // switching to a new song while one was already playing keeps
+        // the music going rather than leaving the visitor to hit play
+        // again on every song - loadUri alone leaves it paused
+        if (wasPlaying) playerController.play();
+        return;
       }
-    };
+      loadSpotifyIframeApi().then(function (IFrameAPI) {
+        // the carousel may well have moved on to a different song by
+        // the time the API script has actually loaded - always create
+        // the controller pointed at whatever's current, not this call's
+        // index, and bail out entirely if it got created in the meantime
+        if (playerController) return;
+        var latestUri = "spotify:track:" + items[current].getAttribute("data-track");
+        playerControllerUri = latestUri;
+        var host = slots[current];
+        if (host && playerWrapper.parentNode !== host) host.appendChild(playerWrapper);
+        IFrameAPI.createController(playerHost, { uri: latestUri, width: "100%", height: "80" }, function (EmbedController) {
+          playerController = EmbedController;
+          playerController.addListener("playback_update", function (e) {
+            if (!e.data) return;
+            playerIsPlaying = !e.data.isPaused;
+            if (e.data.isPaused) releaseSound(stopSpotify);
+            else takeoverSound(stopSpotify);
+          });
+        });
+      });
+    }
+
+    function render() {
+      items.forEach(function (item, i) {
+        var offset = wrappedOffset(i, pos);
+        var dist = Math.abs(offset);
+        var scale = lerpStops(dist, SCALE_STOPS);
+        var opacity = lerpStops(dist, OPACITY_STOPS);
+        var transform = "scale(" + scale + ")";
+
+        item.style.transform = "translate(calc(-50% + " + (offset * spacing) + "px), -50%)";
+        item.style.zIndex = String(100 - Math.round(dist));
+        item.style.pointerEvents = dist <= 2.5 ? "auto" : "none";
+        cards[i].style.transform = transform;
+        cards[i].style.opacity = String(opacity);
+        // the embedded player only ever really holds a song for
+        // whichever card is `current`, but it moves/scales/fades right
+        // along with that card rather than hard-cutting in and out -
+        // every other card's slot is empty, so styling them the same
+        // way costs nothing
+        slots[i].style.transform = "translateX(-50%) " + transform;
+        slots[i].style.opacity = String(opacity);
+        slots[i].style.pointerEvents = i === current ? "auto" : "none";
+        // which card is "active" tracks the committed `current` index,
+        // not the live `pos` - otherwise the embed would reload on
+        // every card `pos` sweeps past mid-coast
+        item.classList.toggle("is-active", i === current);
+      });
+    }
+
+    // moves to `index` outright (arrows, clicking a side card) - pos and
+    // current change together, with the CSS transition easing pos there
+    function goTo(index) {
+      current = ((index % n) + n) % n;
+      pos = current;
+      render();
+      placePlayer(current);
+    }
+
+    if (prevBtn) prevBtn.addEventListener("click", function () { stopCoasting(); goTo(current - 1); });
+    if (nextBtn) nextBtn.addEventListener("click", function () { stopCoasting(); goTo(current + 1); });
+
+    items.forEach(function (item, i) {
+      item.addEventListener("click", function (e) {
+        // dragMoved (below) already blocked the click that ends a real
+        // drag; this only handles a plain tap/click on a side card
+        if (dragMoved > 6) return;
+        if (i !== current) {
+          e.preventDefault();
+          stopCoasting();
+          goTo(i);
+        }
+        // a click on the already-active card falls through to its
+        // player slot normally - nothing to intercept there
+      });
+    });
+
+    var dragging = false;
+    var coasting = false;
+    var coastRAF = null;
+    var coastVelocity = 0; // in `pos` units (songs) per frame
+    var startX = 0, lastX = 0, lastT = 0, pointerVelocity = 0, dragMoved = 0;
+    var FRICTION = 0.945;
+    var STOP_VELOCITY = 0.0015; // songs/frame - below this it's settling, not coasting
+
+    function stopCoasting() {
+      if (coastRAF !== null) { window.cancelAnimationFrame(coastRAF); coastRAF = null; }
+      coasting = false;
+      coastVelocity = 0;
+      // "live" = something is updating pos every frame by hand (a drag
+      // or a coast), so the CSS transition needs to stay out of its way;
+      // it only comes back for the eased hop a click/arrow/settle takes
+      viewport.classList.remove("is-live");
+    }
+
+    function settle() {
+      // the coast has all but stopped wherever it happens to be, which
+      // is essentially never exactly on a song - ease that last sliver
+      // of distance to the nearest one via the CSS transition (the
+      // same one a click or arrow-press eases through) and only then
+      // commit `current` and swap the embed over to it
+      coasting = false;
+      coastRAF = null;
+      viewport.classList.remove("is-live");
+      goTo(Math.round(pos));
+    }
+
+    function stepCoast() {
+      pos += coastVelocity;
+      coastVelocity *= FRICTION;
+      render();
+      if (Math.abs(coastVelocity) > STOP_VELOCITY) {
+        coastRAF = window.requestAnimationFrame(stepCoast);
+      } else {
+        settle();
+      }
+    }
+
+    function pointerDown(e) {
+      // don't start a drag (and don't steal the pointer) for a press
+      // that lands on the embedded Spotify player - capturing the
+      // pointer here would redirect the mouseup/click that the iframe
+      // needs to actually register its own play button being pressed,
+      // which is why songs wouldn't play even though the widget showed
+      if (e.target && e.target.closest && e.target.closest(".song-carousel-player-slot")) return;
+      stopCoasting();
+      dragging = true;
+      dragMoved = 0;
+      pointerVelocity = 0;
+      startX = lastX = e.clientX;
+      lastT = performance.now();
+      viewport.classList.add("is-live", "is-dragging", "is-grabbing");
+      viewport.setPointerCapture && e.pointerId != null && viewport.setPointerCapture(e.pointerId);
+    }
+
+    function pointerMove(e) {
+      if (!dragging) return;
+      var now = performance.now();
+      var dx = e.clientX - lastX;
+      var dt = Math.max(now - lastT, 1);
+      // exponential smoothing keeps the release velocity honest even if
+      // the last move before release was tiny/jittery
+      pointerVelocity = pointerVelocity * 0.7 + (dx / dt * 16.67) * 0.3;
+      // dragging left moves the strip left, which is dragging *toward*
+      // higher-index songs - i.e. `pos` increases as dx goes negative
+      pos -= dx / spacing;
+      dragMoved += Math.abs(dx);
+      lastX = e.clientX;
+      lastT = now;
+      render();
+    }
+
+    function pointerUp() {
+      if (!dragging) return;
+      dragging = false;
+      viewport.classList.remove("is-dragging", "is-grabbing");
+      coastVelocity = -pointerVelocity / spacing;
+      if (Math.abs(coastVelocity) > STOP_VELOCITY) {
+        coasting = true;
+        coastRAF = window.requestAnimationFrame(stepCoast);
+      } else {
+        settle();
+      }
+    }
+
+    viewport.addEventListener("pointerdown", pointerDown);
+    window.addEventListener("pointermove", pointerMove);
+    window.addEventListener("pointerup", pointerUp);
+    window.addEventListener("pointercancel", pointerUp);
+
+    measure();
+    render();
+    placePlayer(current);
+
+    window.addEventListener("resize", function () {
+      measure();
+      render();
+    });
+
+    // leaving the music page stops whatever's playing and gives the
+    // site's own background music back, the same as a score cue does
+    window.addEventListener("routechange", function () {
+      if (root.closest(".page.active")) return;
+      stopSpotify();
+      releaseSound(stopSpotify);
+    });
   })();
 })();

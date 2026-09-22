@@ -24,6 +24,24 @@
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="moretti incorporated">
 <meta name="twitter:card" content="summary_large_image">
+<!-- structured data: tells Google who this site is about (not just what
+     the page text says), so results/knowledge panels can pick it up
+     directly instead of guessing from the visible copy -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Luca Moretti",
+  "url": "https://morettiincorporated.com/",
+  "image": "https://morettiincorporated.com/assets/img/og-image.jpg",
+  "jobTitle": ["Composer", "Producer", "Filmmaker", "Pianist"],
+  "description": "Composer, producer, musician, filmmaker and pianist. Original scores for Gatorville, This is the House and like little earthquakes.",
+  "sameAs": [
+    "https://www.instagram.com/moretti_inc/",
+    "https://morettii.bandcamp.com/"
+  ]
+}
+</script>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -334,6 +352,61 @@
          release; add more by copying the block.
          ============================================================ -->
     <section id="page-music" class="page page-music">
+
+      <!-- ============================================================
+           SINGLES CAROUSEL - one card centered and playable, the rest
+           fanned out smaller/dimmer to each side (like a shelf you spin
+           through), with prev/next arrows plus click-a-side-card and
+           drag/swipe-with-momentum all doing the same thing: changing
+           which card is centered. script.js (-> songCarousel) reads the
+           track id + cover off each .song-carousel-item and handles the
+           rest (the embedded Spotify player already shows the title),
+           so add a song by copying one item here - nothing else to
+           update.
+           ============================================================ -->
+      <div class="song-carousel" data-reveal>
+        <button class="song-carousel-arrow song-carousel-arrow-prev" type="button" aria-label="Previous song">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4 L7 12 L15 20"/></svg>
+        </button>
+        <div class="song-carousel-viewport">
+          <ul class="song-carousel-track" id="song-carousel-track">
+            <li class="song-carousel-item" data-track="1noDbj1MYxP6DLbH6Wmkto">
+              <div class="song-carousel-card">
+                <img loading="lazy" decoding="async" draggable="false" class="song-carousel-cover" src="assets/img/music-carousel/game-s-gone.jpg" width="300" height="300" alt="">
+                </div>
+              <div class="song-carousel-player-slot"></div>
+            </li>
+            <li class="song-carousel-item" data-track="00nkHXeiIfUtwYkr7HV1Jt">
+              <div class="song-carousel-card">
+                <img loading="lazy" decoding="async" draggable="false" class="song-carousel-cover" src="assets/img/music-carousel/irrational.jpg" width="300" height="300" alt="">
+                </div>
+              <div class="song-carousel-player-slot"></div>
+            </li>
+            <li class="song-carousel-item" data-track="1XlVvMO37XsUQ6MyK2cDlm">
+              <div class="song-carousel-card">
+                <img loading="lazy" decoding="async" draggable="false" class="song-carousel-cover" src="assets/img/music-carousel/star-above-mac-man.jpg" width="300" height="300" alt="">
+                </div>
+              <div class="song-carousel-player-slot"></div>
+            </li>
+            <li class="song-carousel-item" data-track="1iCaCwESrEbzKO0IY7utj2">
+              <div class="song-carousel-card">
+                <img loading="lazy" decoding="async" draggable="false" class="song-carousel-cover" src="assets/img/music-carousel/cold-2.jpg" width="300" height="300" alt="">
+                </div>
+              <div class="song-carousel-player-slot"></div>
+            </li>
+            <li class="song-carousel-item" data-track="6hnB2d4CBJU8ApzWUMTt8h">
+              <div class="song-carousel-card">
+                <img loading="lazy" decoding="async" draggable="false" class="song-carousel-cover" src="assets/img/music-carousel/star-above-mac-man.jpg" width="300" height="300" alt="">
+                </div>
+              <div class="song-carousel-player-slot"></div>
+            </li>
+          </ul>
+        </div>
+        <button class="song-carousel-arrow song-carousel-arrow-next" type="button" aria-label="Next song">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4 L17 12 L9 20"/></svg>
+        </button>
+      </div>
+
       <div class="release-list">
 
         <article class="release-item" data-reveal>
